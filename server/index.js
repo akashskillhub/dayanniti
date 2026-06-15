@@ -21,6 +21,8 @@ import syllabusRoutes from "./routes/syllabus.route.js";
 
 dotenv.config();
 
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -40,6 +42,38 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 app.use("/uploads", express.static(uploadDir));
+
+if (process.env.VERCEL) {
+  async function connectDB() {
+    if (global._mongoConn && mongoose.connection.readyState === 1) return;
+    if (global._mongoPromise) return global._mongoPromise;
+    if (!MONGO_URI) {
+      console.error("MONGO_URI/MONGODB_URI is not set in Vercel environment variables");
+      return;
+    }
+    global._mongoPromise = mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+    }).then((conn) => {
+      global._mongoConn = conn;
+      console.log("MongoDB connected");
+    }).catch((err) => {
+      global._mongoPromise = null;
+      console.error("MongoDB connection error:", err.message);
+    });
+    return global._mongoPromise;
+  }
+
+  app.use(async (req, res, next) => {
+    if (!MONGO_URI) {
+      return res.status(500).json({ message: "Server configuration error: MONGO_URI/MONGODB_URI not set" });
+    }
+    await connectDB();
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(500).json({ message: "Database connection failed" });
+    }
+    next();
+  });
+}
 
 app.get("/", (req, res) => {
   res.json({ status: "ok", message: "DnyanNiti API Server" });
@@ -89,7 +123,7 @@ if (!process.env.VERCEL) {
   });
 
   mongoose
-    .connect(process.env.MONGO_URI)
+    .connect(MONGO_URI)
     .then(() => {
       console.log("🌟 MongoDB Connected Successfully!");
       httpServer.listen(PORT, '0.0.0.0', () => {
@@ -102,11 +136,6 @@ if (!process.env.VERCEL) {
 } else {
   const mockIo = { emit: () => {} };
   app.set("io", mockIo);
-
-  mongoose.connect(process.env.MONGO_URI, {
-    bufferCommands: false,
-    serverSelectionTimeoutMS: 5000,
-  }).catch((err) => console.error("MongoDB connection error:", err.message));
 }
 
 export default app;
