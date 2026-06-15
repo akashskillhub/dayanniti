@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -11,6 +13,16 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      document.documentElement.style.height = '100%';
+      document.body.style.height = '100%';
+      document.body.style.margin = '0';
+      const root = document.getElementById('root');
+      if (root) root.style.minHeight = '100%';
+    }
+  }, []);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

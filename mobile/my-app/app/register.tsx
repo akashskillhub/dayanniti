@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, ScrollView, KeyboardAvoidingView, Platform as RNPlatform } from 'react-native';
 import { useRouter } from 'expo-router';
 import tw from 'twrnc';
 import { FontAwesome5, Feather } from '@expo/vector-icons';
@@ -129,10 +129,12 @@ export default function RegisterScreen() {
     }
   };
 
+  const Container = RNPlatform.OS === 'web' ? View : KeyboardAvoidingView;
+
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={tw`flex-grow bg-[#f6f7fb]`}
+    <Container
+      {...(RNPlatform.OS !== 'web' ? { behavior: RNPlatform.OS === 'ios' ? 'padding' : 'height' } : {})}
+      style={tw`flex-1 bg-[#f6f7fb]`}
     >
       <ScrollView contentContainerStyle={tw`p-6 pb-12`} keyboardShouldPersistTaps="handled">
         {/* Title */}
@@ -324,6 +326,6 @@ export default function RegisterScreen() {
           <Text style={tw`text-purple-600 font-extrabold`}>Privacy Policy</Text>.
         </Text>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </Container>
   );
 }

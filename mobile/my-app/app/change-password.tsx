@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, ScrollView, KeyboardAvoidingView, Platform as RNPlatform } from 'react-native';
 import SafeStorage from '../utils/storage';
 import { useRouter } from 'expo-router';
 import tw from 'twrnc';
@@ -81,9 +81,11 @@ export default function ChangePasswordScreen() {
     }
   };
 
+  const Container = RNPlatform.OS === 'web' ? View : KeyboardAvoidingView;
+
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+    <Container
+      {...(RNPlatform.OS !== 'web' ? { behavior: RNPlatform.OS === 'ios' ? 'padding' : 'height' } : {})}
       style={tw`flex-1 bg-[#f6f7fb]`}
     >
       {/* Top Header */}
@@ -203,6 +205,6 @@ export default function ChangePasswordScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </Container>
   );
 }

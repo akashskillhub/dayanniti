@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npx expo export --platform web --output-dir dist",
+  "buildCommand": "cd my-app && npm install && npx expo export --platform web --output-dir ../dist",
   "outputDirectory": "dist",
   "framework": null,
   "rewrites": [

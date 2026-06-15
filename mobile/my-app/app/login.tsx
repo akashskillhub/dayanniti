@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, ScrollView, KeyboardAvoidingView, Platform as RNPlatform, Image } from 'react-native';
 import SafeStorage from '../utils/storage';
 import { useRouter } from 'expo-router';
 import tw from 'twrnc';
@@ -62,9 +62,11 @@ export default function LoginScreen() {
     }
   };
 
+  const Container = RNPlatform.OS === 'web' ? View : KeyboardAvoidingView;
+
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+    <Container
+      {...(RNPlatform.OS !== 'web' ? { behavior: RNPlatform.OS === 'ios' ? 'padding' : 'height' } : {})}
       style={tw`flex-1 bg-[#f6f7fb]`}
     >
       <ScrollView style={tw`flex-1`} contentContainerStyle={tw`flex-grow`} keyboardShouldPersistTaps="always">
@@ -171,6 +173,6 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </Container>
   );
 }
