@@ -5,6 +5,14 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "https://dayanniti-server-lilac.vercel.app/api/$1"
+    },
+    {
+      "source": "/uploads/(.*)",
+      "destination": "https://dayanniti-server-lilac.vercel.app/uploads/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
