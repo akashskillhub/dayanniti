@@ -103,7 +103,10 @@ if (!process.env.VERCEL) {
   const mockIo = { emit: () => {} };
   app.set("io", mockIo);
 
-  mongoose.connect(process.env.MONGO_URI).catch(() => {});
+  mongoose.connect(process.env.MONGO_URI, {
+    bufferCommands: false,
+    serverSelectionTimeoutMS: 5000,
+  }).catch((err) => console.error("MongoDB connection error:", err.message));
 }
 
 export default app;
