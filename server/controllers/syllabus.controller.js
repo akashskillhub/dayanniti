@@ -50,7 +50,8 @@ export const deleteSyllabus = asyncHandler(async (req, res) => {
     if (syllabus.pdfUrl) {
       try {
         const filename = path.basename(syllabus.pdfUrl);
-        const filePath = path.join(path.resolve("uploads"), filename);
+        const uploadDir = process.env.VERCEL ? "/tmp/uploads" : path.resolve("uploads");
+        const filePath = path.join(uploadDir, filename);
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
           console.log(`🗑️ Deleted file: ${filePath}`);

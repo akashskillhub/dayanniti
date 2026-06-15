@@ -5,8 +5,10 @@ import fs from "fs";
 
 const router = express.Router();
 
-// Ensure the uploads directory exists
-const uploadDir = path.resolve("uploads");
+// Use /tmp/uploads on Vercel (serverless writable dir), local uploads/ otherwise
+const uploadDir = process.env.VERCEL
+  ? "/tmp/uploads"
+  : path.resolve("uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
